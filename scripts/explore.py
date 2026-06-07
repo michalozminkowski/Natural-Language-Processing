@@ -10,7 +10,6 @@ response = requests.get(url, headers=headers)
 if response.status_code == 200:
     soup = BeautifulSoup(response.text, 'html.parser')
     
-    # Let's find all links and see what the article links look like
     links = set()
     for a in soup.find_all('a', href=True):
         href = a['href']
