@@ -3,3 +3,11 @@ beautifulsoup4==4.12.3
 lxml==5.2.1
 pandas==2.2.2
 tqdm==4.66.2
+sentence-transformers==2.5.1
+torch==2.2.1
+jupyter==1.0.0
+faiss-cpu==1.8.0
+groq==1.0.0
+python-dotenv==1.0.1
+transformers==4.38.2
+flask==3.0.2
