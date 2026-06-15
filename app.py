@@ -2,7 +2,7 @@ import os
 os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
 from flask import Flask, request, jsonify, render_template
-from rag_engine import rag_engine
+from scripts.rag_engine import rag_engine
 
 app = Flask(__name__)
 

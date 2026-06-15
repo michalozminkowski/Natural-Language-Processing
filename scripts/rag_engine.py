@@ -16,7 +16,7 @@ class RAGEngine:
         self.load_components()
 
     def load_components(self):
-        data_dir = os.path.join(os.path.dirname(__file__), 'data')
+        data_dir = os.path.join(os.path.dirname(__file__), '../data')
         embeddings_path = os.path.join(data_dir, 'embeddings.npy')
         mapping_path = os.path.join(data_dir, 'index_mapping.json')
         

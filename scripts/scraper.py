@@ -66,7 +66,7 @@ def parse_natatry_article(url):
             full_text = f"DANE TECHNICZNE SZLAKU:\n{tables_text}\n\nOPIS SZLAKU:\n{full_text}"
         
         return {
-            "id": url.split('/')[-1] or url.split('/')[-2],
+            "id": url.replace('https://natatry.pl/', '').replace('/', '_').strip('_'),
             "url": url,
             "nazwa": title,
             "pasmo_gorskie": "Tatry",
@@ -174,7 +174,7 @@ def parse_tatromaniak_article(url):
             full_text = f"DANE TECHNICZNE SZLAKU:\n{tables_text}\n\nOPIS SZLAKU:\n{full_text}"
             
         return {
-            "id": url.strip('/').split('/')[-1],
+            "id": url.replace('https://tatromaniak.pl/szlaki/', '').replace('/', '_').strip('_'),
             "url": url,
             "nazwa": title,
             "pasmo_gorskie": "Tatry",
@@ -271,7 +271,7 @@ def parse_tatryinfo_article(url):
             full_text = f"DANE TECHNICZNE SZLAKU:\n{tables_text}\n\nOPIS SZLAKU:\n{full_text}"
             
         return {
-            "id": url.split('/')[-1].replace('.php', ''),
+            "id": url.replace('https://www.tatry.info.pl/', '').replace('.php', '').replace('/', '_').strip('_'),
             "url": url,
             "nazwa": title,
             "pasmo_gorskie": "Tatry",
