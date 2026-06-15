@@ -1,4 +1,4 @@
-# Środowisko Pythona
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -22,14 +22,14 @@ share/python-wheels/
 .installed.cfg
 *.egg
 
-# Pliki środowiskowe
+# System file
 .env
 .venv
 env/
 venv/
 ENV/
 
-# Pobrane dane
+# Data
 data/
 !data/.gitkeep
 *.json
