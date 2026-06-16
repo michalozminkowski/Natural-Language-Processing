@@ -1,0 +1,23 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/chat")
+
+# Model do szybkiej ekstrakcji preferencji użytkownika z rozmowy.
+# Ten model działa przy każdym pytaniu, więc powinien być szybki.
+OLLAMA_EXTRACT_MODEL = os.getenv("OLLAMA_EXTRACT_MODEL", "llama3.2")
+
+# Model do finalnej odpowiedzi chatbota.
+# Może być mocniejszy, np. Bielik.
+OLLAMA_RESPONSE_MODEL = os.getenv("OLLAMA_RESPONSE_MODEL", "llama3.2")
+
+# Model do generowania data/processed/*.json z artykułów.
+# Może być Bielik, bo to robimy rzadziej.
+OLLAMA_METADATA_MODEL = os.getenv("OLLAMA_METADATA_MODEL", "llama3.2")
+
+EMBEDDING_MODEL = os.getenv(
+    "EMBEDDING_MODEL",
+    "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+)
