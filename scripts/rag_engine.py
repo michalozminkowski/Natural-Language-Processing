@@ -340,7 +340,7 @@ Jeśli użytkownik unika przepaści, każde wystąpienie łańcuchów, żlebu, e
                          ] + messages
 
         final_response = requests.post(OLLAMA_URL, json={
-            "model": OLLAMA_EXTRACT_MODEL,
+            "model": OLLAMA_RESPONSE_MODEL,
             "messages": final_messages,
             "stream": False,
             "options": {"temperature": 0.2}
