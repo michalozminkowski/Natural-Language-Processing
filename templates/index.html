@@ -114,10 +114,15 @@
         let conversationHistory = [];
         let extractedState = {
             "doswiadczenie": null,
+            "kondycja": null,
             "czas_lub_dystans": null,
+            "poziom_trudnosci": null,
+            "ekspozycja": null,
+            "z_kim_idzie": null,
+            "dzieci": null,
             "preferencje": null,
-            "z_kim_idzie": null
-        };
+            "ograniczenia_zdrowotne": null
+            };
 
         function appendMessage(role, content) {
             const chatContainer = document.getElementById('chat-container');
