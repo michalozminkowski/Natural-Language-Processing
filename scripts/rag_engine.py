@@ -39,6 +39,16 @@ class RAGEngine:
 
     def get_answer(self, messages, current_state):
         last_user_msg = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+        user_message_count = sum(
+            1 for message in messages
+            if message.get("role") == "user"
+        )
+
+        extraction_model = (
+            OLLAMA_RESPONSE_MODEL
+            if user_message_count == 1
+            else OLLAMA_EXTRACT_MODEL
+        )
         last_assistant_msg = next((m["content"] for m in reversed(messages) if m["role"] == "assistant"), "")
 
         default_state = {
@@ -170,7 +180,7 @@ Możesz wnioskować z kontekstu (np. "długie i wymagające trasy" -> czas_lub_d
         ]
 
         response = requests.post(OLLAMA_URL, json={
-            "model": OLLAMA_EXTRACT_MODEL,
+            "model": extraction_model,
             "messages": decision_messages,
             "stream": False,
             "format": "json",
