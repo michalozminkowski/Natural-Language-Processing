@@ -39,6 +39,7 @@ class RAGEngine:
 
     def get_answer(self, messages, current_state):
         last_user_msg = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+        last_assistant_msg = next((m["content"] for m in reversed(messages) if m["role"] == "assistant"), "")
 
         default_state = {
             "doswiadczenie": None,
@@ -158,11 +159,14 @@ Jeśli nowa wiadomość nie zawiera danego pola, zostaw wcześniejszą wartość
 Frazy typu "pierwszy raz w góry", "pierwszy raz w gory", "pierwszy raz w Tatrach", "nigdy nie byłem w górach", "nigdy nie bylem w gorach", "nie mam doświadczenia", "nie mam doswiadczenia" oznaczają, że użytkownik jest początkujący.
 
 Wiek i płeć użytkownika nie określają trudności trasy. Nie wpisuj wieku ani płci do profilu, chyba że użytkownik poda ograniczenia zdrowotne.
+
+JEŚLI UŻYTKOWNIK PODAJE WIELE INFORMACJI W JEDNEJ WIADOMOŚCI, WYPEŁNIJ WSZYSTKIE ODPOWIEDNIE POLA.
+Możesz wnioskować z kontekstu (np. "długie i wymagające trasy" -> czas_lub_dystans: "długa", poziom_trudnosci: "trudna", "chodzę regularnie" -> doswiadczenie: "doświadczony").
 """
 
         decision_messages = [
             {"role": "system", "content": decision_system_prompt},
-            {"role": "user", "content": f"NOWA WIADOMOŚĆ UŻYTKOWNIKA: {last_user_msg}"}
+            {"role": "user", "content": f"OSTATNIE PYTANIE ASYSTENTA: {last_assistant_msg}\n\nNOWA WIADOMOŚĆ UŻYTKOWNIKA: {last_user_msg}"}
         ]
 
         response = requests.post(OLLAMA_URL, json={
@@ -189,10 +193,12 @@ Wiek i płeć użytkownika nie określają trudności trasy. Nie wpisuj wieku an
             new_value = extracted.get(key)
 
             if new_value not in [None, "", "null", [], {}]:
+                if isinstance(new_value, list):
+                    new_value = ", ".join(map(str, new_value))
                 state[key] = new_value
 
         def is_empty(value):
-            return value is None or value == "" or str(value).lower() == "null"
+            return value is None or value == "" or str(value).lower() == "null" or value == [] or value == {}
 
         required_questions = [
             (

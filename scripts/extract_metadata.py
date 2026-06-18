@@ -4,10 +4,11 @@ import json
 import re
 import requests
 from tqdm import tqdm
-from config import OLLAMA_METADATA_MODEL, OLLAMA_URL
-from schemas import TrailMetadata
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_ROOT)
+
+from config import OLLAMA_METADATA_MODEL, OLLAMA_URL
+from schemas import TrailMetadata
 
 
 
