@@ -39,16 +39,6 @@ class RAGEngine:
 
     def get_answer(self, messages, current_state):
         last_user_msg = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
-        user_message_count = sum(
-            1 for message in messages
-            if message.get("role") == "user"
-        )
-
-        extraction_model = (
-            OLLAMA_RESPONSE_MODEL
-            if user_message_count == 1
-            else OLLAMA_EXTRACT_MODEL
-        )
         last_assistant_msg = next((m["content"] for m in reversed(messages) if m["role"] == "assistant"), "")
 
         default_state = {
@@ -180,7 +170,7 @@ Możesz wnioskować z kontekstu (np. "długie i wymagające trasy" -> czas_lub_d
         ]
 
         response = requests.post(OLLAMA_URL, json={
-            "model": extraction_model,
+            "model": OLLAMA_EXTRACT_MODEL,
             "messages": decision_messages,
             "stream": False,
             "format": "json",
@@ -341,6 +331,7 @@ Możesz wnioskować z kontekstu (np. "długie i wymagające trasy" -> czas_lub_d
 10. Jeśli kandydat ma ostrzeżenie "NIE SPEŁNIA PREFERENCJI", nie pisz, że spełnia tę preferencję.
 11. Nie przedstawiaj trasy jako widokowej, jeśli ostrzeżenia mówią, że nie jest szczególnie widokowa.
 12. Alternatywa także musi być zgodna z wymaganiami bezpieczeństwa użytkownika.
+13. Pisz w normalnym formnie, nie uzywaj pogrubień typu (**XXX**) itp. ma być czysty tekst.
 
 Jeśli użytkownik unika przepaści, każde wystąpienie łańcuchów, żlebu, ekspozycji lub ubezpieczeń traktuj jako poważny problem, a nie neutralną informację.
 

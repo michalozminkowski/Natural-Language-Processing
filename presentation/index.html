@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prezentacja Projektu - Doradca Górski AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/night.min.css" id="theme">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .reveal {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .reveal h1,
+        .reveal h2,
+        .reveal h3 {
+            font-family: 'Inter', sans-serif;
+            text-transform: none;
+            background: -webkit-linear-gradient(#ffffff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .reveal p,
+        .reveal li {
+            font-size: 0.65em;
+            line-height: 1.4;
+            color: #d1d5db;
+        }
+
+        .reveal h1 {
+            font-size: 1.6em;
+            margin-bottom: 5%;
+        }
+
+        .reveal h2 {
+            font-size: 1.2em;
+            margin-bottom: 4%;
+        }
+
+        .reveal h3 {
+            font-size: 0.9em;
+            margin-bottom: 3%;
+        }
+
+        .highlight {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .model-tag {
+            color: #60a5fa;
+            /* Blue */
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+        }
+
+        .box {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4%;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin: 2% auto;
+            width: 90%;
+            max-height: 50vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            text-align: left;
+        }
+
+        .box ul {
+            margin-left: 5%;
+        }
+
+        .box li {
+            margin-bottom: 2%;
+        }
+
+        .box-title {
+            text-align: center;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4%;
+            font-size: 1.1em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 3%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- Slide 1 -->
+            <section>
+                <h1>Doradca Górski AI</h1>
+                <h3>System Rekomendacji Szlaków</h3>
+            </section>
+
+            <!-- Slide 2 -->
+            <section>
+                <h2>Cel Projektu</h2>
+                <p>Zbudowanie kompleksowego asystenta turystycznego, który potrafi przeprowadzić z użytkownikiem
+                    inteligentną rozmowę i na podstawie jego profilu zaproponować najlepszą trasę w Tatrach.</p>
+                <div class="box" style="text-align: center; margin-top: 30px;">
+                    <p style="font-size: 1.1em; color: #fff;">
+                        Dane ➔ Strukturyzacja ➔ RAG ➔ Modele Językowe
+                    </p>
+                </div>
+            </section>
+
+            <!-- Slide 3 -->
+            <section>
+                <h2>Krok 1: Pozyskiwanie Danych</h2>
+                <div class="box">
+                    <div class="box-title">Scrapery Python</div>
+                    <ul>
+                        <li><strong>Zadanie:</strong> Zebranie rzetelnych artykułów i przewodników ze stron
+                            internetowych dedykowanych tatrzańskim szlakom.</li>
+                        <li><strong>Źródła:</strong> Pobraliśmy dane z trzech sprawdzonych portali: <span
+                                class="highlight">natatry.pl</span>, <span class="highlight">tatromaniak.pl</span> oraz
+                            <span class="highlight">tatry.info.pl</span>.
+                        </li>
+                        <li><strong>Wynik:</strong> Wyekstrahowaliśmy łącznie <strong>314 pełnych artykułów</strong> z
+                            opisami szlaków.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Slide 4 -->
+            <section>
+                <h2>Krok 2: Transformacja Danych</h2>
+                <div class="box">
+                    <div class="box-title">LLM jako analityk danych</div>
+                    <ul>
+                        <li><strong>Wyzwanie:</strong> Surowe artykuły są nieustrukturyzowane i trudne do przeszukiwania
+                            w formie parametrów.</li>
+                        <li><strong>Rozwiązanie:</strong> Użyliśmy modelu <strong>Llama 3.2</strong>, aby wyciągał
+                            konkretne dane: <em>czas przejścia, przewyższenie, trudność, obecność łańcuchów, itp.</em> i
+                            zapisywał je do nowego pliku json.</li>
+                        <li><strong>Wydajność:</strong> Zdecydowaliśmy się na model Llama zamiast Bielika ze względów
+                            wydajnościowych. Przetworzenie 314 artykułów za pomocą Llamy zajęło <span
+                                class="highlight">około 1,5 godziny</span>. W przypadku Bielika ten sam proces trwałby
+                            <strong>około 10 godzin</strong>.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Slide 5 -->
+            <section>
+                <h2>Krok 3: Architektura RAG</h2>
+                <div class="box">
+                    <div class="box-title">Baza Wektorowa</div>
+                    <ul>
+                        <li><strong>Embeddingi:</strong> Przetworzenie danych na wektory przy pomocy modelu
+                            <em>paraphrase-multilingual-MiniLM</em>.
+                        </li>
+                        <li><strong>FAISS:</strong> Biblioteka od Mety wyszukiwania szlaków
+                            odpowiadających wymaganiom użytkownika w przestrzeni wielowymiarowej.</li>
+                        <li><strong>Mechanika:</strong> Konwertujemy zebrane preferencje z chatu na wektor, szukamy
+                            najbliższych trafień, i odrzucamy te, które nie pasują do restrykcji.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Slide 6 -->
+            <section>
+                <h2>Krok 4: Konwersacja z AI</h2>
+                <div class="box">
+                    <div class="box-title">Rozmowa sterowana profilowaniem</div>
+                    <p>Aby pogodzić szybkość działania z jakością analizy, proces rozmowy rozdzieliliśmy na
+                        dwa modele:</p>
+                    <ul>
+                        <li><span class="model-tag" style="color: #60a5fa;">Bielik</span> - Służy do analizy pierwszej
+                            wiadomości (
+                            "Opowiedz coś o sobie") i wyciąga w jednym kroku wiele wniosków na raz. Używany również na
+                            samym końcu do ostatecznego wyboru tras.</li>
+                        <li><span class="model-tag" style="color: #f59e0b;">Llama</span> - Odpowiada za dopytywanie
+                            użytkownika
+                            o informacje nie pozyskane po pierwszym opisie.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Slide 7 -->
+            <section>
+                <h2>Krok 5: Zarządzanie Stanem</h2>
+                <div class="box">
+                    <ul>
+                        <li><strong>Zasada działania:</strong> Zamiast zmuszać LLM do generowania odpowiedzi od zera
+                            przy każdej wiadomości, system pod spodem utrzymuje <em>"Profil Użytkownika"</em> w
+                            strukturze JSON, który aktualizuje się z każdym krokiem.</li>
+                        <li><strong>Jak to zrobiliśmy?</strong> Zbudowaliśmy system w Pythonie, który sprawdza braki w
+                            JSON-ie i nie uruchamia wyszukiwania szlaków (RAG), dopóki struktura nie jest pełna.</li>
+                        <li><strong>Czemu to służy?</strong> Eliminuje to przedwczesne, bezsensowne rekomendacje i
+                            halucynacje sztucznej inteligencji. Model wydaje ostateczny osąd dopiero wtedy, gdy wywiad
+                            jest w 100% kompletny. Zwiększa to kontrolę i bezpieczeństwo porady.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Slide 8 -->
+            <section>
+                <h2>Niezbędny Profil Użytkownika</h2>
+                <div class="box">
+                    <ul style="column-count: 2; column-gap: 20px;">
+                        <li><strong>Doświadczenie</strong> (np. początkujący)</li>
+                        <li><strong>Kondycja</strong> (np. średnia)</li>
+                        <li><strong>Czas wycieczki</strong> (np. 4 godziny)</li>
+                        <li><strong>Trudność trasy</strong> (np. łatwa)</li>
+                        <li><strong>Ekspozycja</strong> (akceptacja łańcuchów)</li>
+                        <li><strong>Towarzystwo</strong> (np. z dziećmi)</li>
+                        <li><strong>Preferencje</strong> (np. widoki, szczyt)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Slide 9 -->
+            <section>
+                <h2>Krok 6: Wybór i Generowanie Trasy</h2>
+                <div class="box">
+                    <div class="box-title">Jak asystent podejmuje decyzję?</div>
+                    <ul>
+                        <li><strong>Dane wejściowe:</strong> Gdy profil jest pełny, z bazy RAG pobieranych jest kilka
+                            najlepszych szlaków, wraz z wyliczonym wynikiem dopasowania oraz
+                            systemowymi ostrzeżeniami (np. "uwaga na łańcuchy").</li>
+                        <li><strong>Złożony Kontekst:</strong> Do modelu Bielik przesyłany jest
+                            profil użytkownika, wraz z informacjami o znalezionych szlakach.</li>
+                        <li><strong>Logika decyzyjna:</strong> Bielik analizuje kandydatów. Jego zadaniem jest
+                            wykluczenie tras zagrażających bezpieczeństwu (niezgodnych z brakiem doświadczenia) i
+                            zbudowanie ludzkiej, precyzyjnej odpowiedzi z poleceniem trasy głównej oraz alternatywy.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Slide 10 -->
+            <section>
+                <h2>Przykładowa Konwersacja</h2>
+                <div style="display: flex; gap: 2%; align-items: stretch; text-align: left;">
+
+                    <!-- Left: Chat -->
+                    <div class="box"
+                        style="flex: 65%; font-size: 0.35em; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-height: 55vh; overflow-y: auto; margin: 0; padding: 3%; display: flex; flex-direction: column; gap: 10px; background-color: #fafafa; border-radius: 8px;">
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4;  text-align: left;">
+Cześć, jestem tutaj aby wybrać dla ciebie najlepszy szlak górski w tatrach.<br>Opowiedz coś o sobie.
+</div>
+
+                        <div
+                            style="align-self: flex-end; background-color: #222; color: #fff; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4; text-align: left;">
+Jestem doświadczonym turystą górskim i regularnie chodzę po polskich górach od kilku lat. Moją kondycję oceniam jako bardzo dobrą, dzięki czemu bez problemu radzę sobie z długimi i wymagającymi trasami. Na wycieczkę mogę przeznaczyć po 5 godzin marszu. Preferuję trudne szlaki, które wymagają wysiłku i dają poczucie satysfakcji po dotarciu na szczyt. Akceptuję ekspozycję, przepaście oraz bardziej techniczne fragmenty tras, o ile nie wymagają specjalistycznego sprzętu wspinaczkowego. Najczęściej chodzę z drugą osobą lub grupą znajomych. Na trasie najbardziej zależy mi na pięknych widokach, zdobywaniu szczytów oraz odwiedzaniu mniej zatłoczonych miejsc.
+</div>
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 12px 16px; border-radius: 8px; line-height: 1.5;  text-align: left;">
+Najlepsza propozycja:<br><br>Wycieczka na Rysy przez Czarny Staw pod Rysami i Szpiglasową Przełęcz.<br><br>Dlaczego pasuje:<br>- Mieści się w limicie czasu: około 5 godzin marszu<br>- Trasa prowadzi na szczyt lub w rejon szczytowy<br>- Trasa jest trudna, co odpowiada Twoim preferencjom<br>- Oferuje piękne widoki i mniej zatłoczone miejsca<br><br>Na co uważać:<br>- Trasa wymaga doświadczenia górskiego i umiejętności poruszania się po trudnym terenie<br>- Ekspozycja może być wyzwaniem dla osób z lękiem wysokości<br>- Wymagana jest znajomość technik asekuracyjnych na łańcuchach i klamrach<br><br>Alternatywa:<br><br>Wycieczka na Kozi Wierch przez Dolinę Pięciu Stawów Polskich.<br><br>Dlaczego pasuje:<br>- Mieści się w limicie czasu: około 5 godzin marszu<br>- Trasa prowadzi na szczyt lub w rejon szczytowy<br>- Oferuje piękne widoki i mniej zatłoczone miejsca<br>- Jest trudna, co odpowiada Twoim preferencjom<br><br>Na co uważać:<br>- Trasa wymaga doświadczenia górskiego i umiejętności poruszania się po trudnym terenie<br>- Ekspozycja może być wyzwaniem dla osób z lękiem wysokości<br>- Wymagana jest znajomość technik asekuracyjnych na łańcuchach i klamrach<br><br>Uwaga: Obie propozycje zawierają fragmenty trasy z ubezpieczeniami (łańcuchami, klamrami), co może być wyzwaniem dla osób unikających ekspozycji. Jeśli masz lęk wysokości lub nie czujesz się pewnie na takich trasach, rozważ alternatywne szlaki bez ubezpieczeń lub skonsultuj się z doświadczonym przewodnikiem górskim.
+</div>
+                    </div>
+
+                    <!-- Right: Checklist -->
+                    <div class="box" style="flex: 35%; margin: 0; padding: 3%;">
+                        <ul style="list-style-type: none; margin: 0; padding: 0; font-size: 0.7em;">
+                            <li style="margin-bottom: 12px;">✅ <strong>Doświadczenie:</strong> doświadczony</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Kondycja:</strong> bardzo dobra</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Czas:</strong> 5 godzin</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Trudność:</strong> trudna</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Ekspozycja:</strong> akceptuje</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Towarzystwo:</strong> znajomi</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Preferencje:</strong> widoki, szczyty</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 11 -->
+            <section>
+                <h2>Przykładowa Konwersacja</h2>
+                <div style="display: flex; gap: 2%; align-items: stretch; text-align: left;">
+
+                    <!-- Left: Chat -->
+                    <div class="box"
+                        style="flex: 65%; font-size: 0.35em; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-height: 55vh; overflow-y: auto; margin: 0; padding: 3%; display: flex; flex-direction: column; gap: 10px; background-color: #fafafa; border-radius: 8px;">
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4;  text-align: left;">
+Cześć, jestem tutaj aby wybrać dla ciebie najlepszy szlak górski w tatrach.<br>Opowiedz coś o sobie.
+</div>
+
+                        <div
+                            style="align-self: flex-end; background-color: #222; color: #fff; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4; text-align: left;">
+Od kilku lat regularnie odwiedzam polskie góry, głównie Tatry i Beskidy. Najbardziej lubię wymagające szlaki prowadzące na szczyty z rozległymi panoramami. W górach szukam przede wszystkim wyzwań i pięknych widoków.
+</div>
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4;  text-align: left;">
+Jak oceniasz swoją kondycję: słaba, średnia, dobra czy bardzo dobra?
+</div>
+
+                        <div
+                            style="align-self: flex-end; background-color: #222; color: #fff; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4; text-align: left;">
+średnia
+</div>
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4;  text-align: left;">
+Ile czasu albo jaki dystans chcesz maksymalnie przeznaczyć na trasę?
+</div>
+
+                        <div
+                            style="align-self: flex-end; background-color: #222; color: #fff; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4; text-align: left;">
+do 3 godzin
+</div>
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4;  text-align: left;">
+Czy akceptujesz ekspozycję, przepaście i trudniejsze techniczne fragmenty, czy chcesz ich unikać?
+</div>
+
+                        <div
+                            style="align-self: flex-end; background-color: #222; color: #fff; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4; text-align: left;">
+nie akceptuje
+</div>
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4;  text-align: left;">
+Z kim idziesz na trasę: sam, z drugą osobą, ze znajomymi, z rodziną czy z dziećmi?
+</div>
+
+                        <div
+                            style="align-self: flex-end; background-color: #222; color: #fff; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4; text-align: left;">
+idę z dziećmi
+</div>
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 12px 16px; border-radius: 8px; line-height: 1.5;  text-align: left;">
+Na podstawie Twoich preferencji i ograniczeń, najlepszą propozycją będzie trasa:<br><br>Najlepsza propozycja:<br>Do Doliny Pięciu Stawów z Palenicy Białczańskiej przez Dolinę Roztoki<br><br>Dlaczego pasuje: Mieści się w limicie czasu: około 2 h 10 min Niska ekspozycja pasuje do preferencji Trasa wygląda na odpowiednią dla dzieci Trasa prowadzi na szczyt lub w rejon szczytowy<br><br>Na co uważać: Unikaj ekspozycji i przepaści Szlak może być śliski i mokry, zwłaszcza po deszczu<br><br>Alternatywa:<br>Jeśli ta trasa nie spełnia wszystkich wymagań, rozważ alternatywę: Na Gubałówkę i Butorowy Wierch z Zakopanego. Jest to łatwiejsza i krótsza trasa, idealna dla rodzin z dziećmi.
+</div>
+                    </div>
+
+                    <!-- Right: Checklist -->
+                    <div class="box" style="flex: 35%; margin: 0; padding: 3%;">
+                        <ul style="list-style-type: none; margin: 0; padding: 0; font-size: 0.7em;">
+                            <li style="margin-bottom: 12px;">✅ <strong>Doświadczenie:</strong> średniozaawansowany</li>
+                            <li style="margin-bottom: 12px;">❌ <strong>Kondycja:</strong> średnia</li>
+                            <li style="margin-bottom: 12px;">❌ <strong>Czas:</strong> do 3 godzin</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Trudność:</strong> wymagająca</li>
+                            <li style="margin-bottom: 12px;">❌ <strong>Ekspozycja:</strong> nie akceptuje</li>
+                            <li style="margin-bottom: 12px;">❌ <strong>Towarzystwo:</strong> z dziećmi</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Preferencje:</strong> szczyty, wyzwania</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 12 -->
+            <section>
+                <h2>Przykładowa Konwersacja</h2>
+                <div style="display: flex; gap: 2%; align-items: stretch; text-align: left;">
+
+                    <!-- Left: Chat -->
+                    <div class="box"
+                        style="flex: 65%; font-size: 0.35em; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-height: 55vh; overflow-y: auto; margin: 0; padding: 3%; display: flex; flex-direction: column; gap: 10px; background-color: #fafafa; border-radius: 8px;">
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4;  text-align: left;">
+Cześć, jestem tutaj aby wybrać dla ciebie najlepszy szlak górski w tatrach.<br>Opowiedz coś o sobie.
+</div>
+
+                        <div
+                            style="align-self: flex-end; background-color: #222; color: #fff; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4; text-align: left;">
+Najczęściej wybieram się w góry z partnerką. Lubimy spędzać cały dzień na szlaku, zatrzymywać się w schroniskach i podziwiać krajobrazy. Nie zależy nam na rekordach czy bardzo trudnych trasach.
+</div>
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4;  text-align: left;">
+Jakie masz doświadczenie w chodzeniu po górach? Jesteś początkujący, średniozaawansowany czy doświadczony?
+</div>
+
+                        <div
+                            style="align-self: flex-end; background-color: #222; color: #fff; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4; text-align: left;">
+raczej średniozaawansowany
+</div>
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4;  text-align: left;">
+Jak oceniasz swoją kondycję: słaba, średnia, dobra czy bardzo dobra?
+</div>
+
+                        <div
+                            style="align-self: flex-end; background-color: #222; color: #fff; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4; text-align: left;">
+Bardzo dobra
+</div>
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4;  text-align: left;">
+Czy akceptujesz ekspozycję, przepaście i trudniejsze techniczne fragmenty, czy chcesz ich unikać?
+</div>
+
+                        <div
+                            style="align-self: flex-end; background-color: #222; color: #fff; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4; text-align: left;">
+wolałbym nie
+</div>
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 12px 16px; border-radius: 8px; line-height: 1.5;  text-align: left;">
+Rozumiem. Z podanych kandydatów najlepszym wyborem będzie:<br><br>**Najlepsza propozycja:** Szlaki regli Tatr Wysokich<br><br>**Dlaczego pasuje:**<br>- Trudność 2/5 jest zgodna z Twoim średniozaawansowanym poziomem.<br>- Niska ekspozycja odpowiada Twojemu unikaniu przepaści i trudniejszych fragmentów.<br><br>**Na co uważać:**<br>- Brak mocnych informacji, że trasa jest szczególnie widokowa.<br><br>**Alternatywa:** Jeśli chcesz bardziej widokową trasę, możesz rozważyć Dolinę Pięciu Stawów Polskich (jeśli nie masz problemów z ekspozycją).<br><br>Pamiętaj, że bezpieczeństwo jest najważniejsze. Jeśli czujesz się niepewnie na jakimkolwiek odcinku trasy, lepiej wybrać inną opcję. Miłego wypadu!
+</div>
+
+                        <div
+                            style="align-self: flex-end; background-color: #222; color: #fff; max-width: 80%; padding: 10px 14px; border-radius: 8px; line-height: 1.4; text-align: left;">
+a coś bez ekspozycji i z ładnymi widokami bo na tym mi najbardziej zależy
+</div>
+
+                        <div
+                            style="align-self: flex-start; background-color: #eee; color: #222; max-width: 80%; padding: 12px 16px; border-radius: 8px; line-height: 1.5;  text-align: left;">
+Rozumiem, że szukasz trasy bez ekspozycji i z pięknymi widokami. Z podanych kandydatów nie ma idealnej propozycji, ale możemy zaproponować kompromis:<br><br>**Najlepsza propozycja:** Szlaki regli Tatr Wysokich<br><br>**Dlaczego pasuje:**<br>- Trudność 2/5 jest zgodna z Twoim średniozaawansowanym poziomem.<br>- Niska ekspozycja odpowiada Twojemu unikaniu przepaści i trudniejszych fragmentów.<br>- Trasa oferuje pewne widoki, choć nie jest szczególnie znana z wyjątkowych panoram.<br><br>**Na co uważać:**<br>- Brak mocnych informacji, że trasa jest szczególnie widokowa.<br><br>**Alternatywa:** Jeśli chcesz bardziej widokową trasę bez ekspozycji, możesz rozważyć Dolinę Kościeliską (jeśli nie masz problemów z dłuższymi odcinkami asfaltowymi).<br><br>Pamiętaj, że bezpieczeństwo jest najważniejsze. Jeśli czujesz się niepewnie na jakimkolwiek odcinku trasy, lepiej wybrać inną opcję. Miłego wypadu!<br><br>Jeśli chcesz bardziej widokową trasę bez ekspozycji i asfaltowych odcinków, możesz rozważyć Dolinę Chochołowską lub Dolinę Małej Łąki. Obie oferują piękne widoki i są stosunkowo łatwe technicznie.
+</div>
+                    </div>
+
+                    <!-- Right: Checklist -->
+                    <div class="box" style="flex: 35%; margin: 0; padding: 3%;">
+                        <ul style="list-style-type: none; margin: 0; padding: 0; font-size: 0.7em;">
+                            <li style="margin-bottom: 12px;">❌ <strong>Doświadczenie:</strong> średniozaawansowany</li>
+                            <li style="margin-bottom: 12px;">❌ <strong>Kondycja:</strong> bardzo dobra</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Czas:</strong> cały dzień</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Trudność:</strong> łatwa/średnia</li>
+                            <li style="margin-bottom: 12px;">❌ <strong>Ekspozycja:</strong> nie akceptuje</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Towarzystwo:</strong> we dwoje</li>
+                            <li style="margin-bottom: 12px;">✅ <strong>Preferencje:</strong> krajobrazy, schroniska</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 13 -->
+            <section>
+                <h2>Podsumowanie</h2>
+                <div class="box">
+                    <ul>
+                        <li><span class="highlight">Kompleksowość:</span> Projekt przeprowadza dane od zera (strony
+                            internetowe) przez wektory po ostateczną wypowiedź asystenta.</li>
+                        <li><span class="highlight">Bezpieczeństwo:</span> System filtruje szlaki i dba o to, aby
+                            początkujący nie trafił na szlak z łańcuchami i ekspozycją.</li>
+                        <li><span class="highlight">Innowacyjność:</span> Zastosowanie hybrydy modeli optymalizuje
+                            zużycie zasobów i poprawia jakość logiki.</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            slideNumber: 'c/t'
+        });
+    </script>
+</body>
+
+</html>
