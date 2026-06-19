@@ -1,10 +1,8 @@
 # Natural Language Processing - Mountain Trail Advisor
 
-This is an ongoing project building an intelligent, AI-powered conversational agent that recommends mountain trails in the Tatra Mountains.
+This project provides an intelligent, AI-powered conversational agent that recommends mountain trails in the Tatra Mountains.
 
 The system uses a Retrieval-Augmented Generation (RAG) architecture combined with Persistent State Tracking / Slot Filling. It collects user preferences during the conversation, retrieves relevant trail candidates using semantic search and recommends the most suitable route based on structured trail metadata.
-
-> **Note:** This project is actively being developed. New features and improvements will be added.
 
 ## Architecture
 
@@ -301,13 +299,4 @@ OLLAMA_RESPONSE_MODEL=hf.co/speakleash/Bielik-11B-v2.3-Instruct-GGUF:Q4_K_M
 OLLAMA_METADATA_MODEL=hf.co/speakleash/Bielik-11B-v2.3-Instruct-GGUF:Q4_K_M
 ```
 
-## Project Status
 
-This project is under active development. Planned improvements include:
-
-* better metadata extraction,
-* improved trail scoring,
-* optional model comparison between `llama3.2` and Bielik,
-* richer frontend controls,
-* more transparent recommendation explanations,
-* improved handling of contradictory user requirements.
