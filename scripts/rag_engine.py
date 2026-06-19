@@ -40,7 +40,22 @@ class RAGEngine:
     def get_answer(self, messages, current_state):
         last_user_msg = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
         last_assistant_msg = next((m["content"] for m in reversed(messages) if m["role"] == "assistant"), "")
+        user_message_count = sum(
+            1
+            for message in messages
+            if message.get("role") == "user"
+        )
 
+        selected_extraction_model = (
+            OLLAMA_RESPONSE_MODEL
+            if user_message_count == 1
+            else OLLAMA_EXTRACT_MODEL
+        )
+        print(
+            f"[OLLAMA] Analiza wiadomości użytkownika "
+            f"nr {user_message_count} przez model: {selected_extraction_model}",
+            flush=True
+        )
         default_state = {
             "doswiadczenie": None,
             "kondycja": None,
@@ -169,13 +184,15 @@ Możesz wnioskować z kontekstu (np. "długie i wymagające trasy" -> czas_lub_d
             {"role": "user", "content": f"OSTATNIE PYTANIE ASYSTENTA: {last_assistant_msg}\n\nNOWA WIADOMOŚĆ UŻYTKOWNIKA: {last_user_msg}"}
         ]
 
+
         response = requests.post(OLLAMA_URL, json={
-            "model": OLLAMA_EXTRACT_MODEL,
+            "model": selected_extraction_model,
             "messages": decision_messages,
             "stream": False,
             "format": "json",
             "options": {"temperature": 0.0}
         })
+
 
         if response.status_code != 200:
             return f"Error communicating with local model: {response.text}", current_state
@@ -345,7 +362,11 @@ Jeśli użytkownik unika przepaści, każde wystąpienie łańcuchów, żlebu, e
         final_messages = [
                              {"role": "system", "content": final_system_prompt}
                          ] + messages
-
+        print(
+            f"[OLLAMA] Generowanie końcowej rekomendacji przez model: "
+            f"{OLLAMA_RESPONSE_MODEL}",
+            flush=True
+        )
         final_response = requests.post(OLLAMA_URL, json={
             "model": OLLAMA_RESPONSE_MODEL,
             "messages": final_messages,
@@ -354,7 +375,11 @@ Jeśli użytkownik unika przepaści, każde wystąpienie łańcuchów, żlebu, e
         })
 
         if final_response.status_code == 200:
-            return final_response.json()["message"]["content"], state
+            answer = final_response.json()["message"]["content"]
+
+            answer = answer.replace("**", "")
+
+            return answer, state
 
         return f"Error during final answer generation: {final_response.text}", state
 rag_engine = RAGEngine()

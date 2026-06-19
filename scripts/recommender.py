@@ -129,7 +129,6 @@ def score_trail(user_profile, trail):
 
     full_text = f"{name} {description} {risks_text}"
 
-    # -------- CZAS --------
     max_duration = extract_duration_limit_hours(user)
 
     duration = trail.get("duration_hours")
@@ -154,7 +153,6 @@ def score_trail(user_profile, trail):
         except (TypeError, ValueError):
             pass
 
-    # -------- TRUDNOŚĆ --------
     desired_difficulty = desired_difficulty_to_number(user)
     difficulty = trail.get("difficulty")
 
@@ -162,7 +160,6 @@ def score_trail(user_profile, trail):
         try:
             difficulty = int(difficulty)
 
-            # Bardzo łatwa
             if desired_difficulty == 1:
                 if difficulty == 1:
                     score += 30
@@ -174,7 +171,6 @@ def score_trail(user_profile, trail):
                     score -= 60
                     warnings.append(f"trudność {difficulty}/5 jest za wysoka")
 
-            # Łatwa
             elif desired_difficulty == 2:
                 if difficulty in [1, 2]:
                     score += 30
@@ -186,7 +182,6 @@ def score_trail(user_profile, trail):
                     score -= 60
                     warnings.append(f"trudność {difficulty}/5 jest za wysoka")
 
-            # Średnia
             elif desired_difficulty == 3:
                 if difficulty == 3:
                     score += 30
@@ -201,7 +196,6 @@ def score_trail(user_profile, trail):
                     score -= 40
                     warnings.append(f"trudność {difficulty}/5 słabo pasuje do preferencji")
 
-            # Trudna
             elif desired_difficulty == 4:
                 if difficulty in [4, 5]:
                     score += 35
@@ -216,7 +210,6 @@ def score_trail(user_profile, trail):
         except (TypeError, ValueError):
             pass
 
-    # -------- DOŚWIADCZENIE --------
     if "początkują" in str(user.get("doswiadczenie")) or "poczatkuj" in str(user.get("doswiadczenie")):
         if trail.get("suitable_for_beginners") is True:
             score += 25
@@ -230,7 +223,6 @@ def score_trail(user_profile, trail):
             score -= 50
             warnings.append("trasa jest zbyt trudna dla początkującego")
 
-    # -------- KONDYCJA / PRZEWYŻSZENIE --------
     elevation_gain = trail.get("elevation_gain_m")
 
     if elevation_gain:
@@ -252,7 +244,6 @@ def score_trail(user_profile, trail):
         except (TypeError, ValueError):
             pass
 
-    # -------- EKSPOZYCJA / ŁAŃCUCHY / ŻLEBY --------
     user_avoids_exposure = (
         "unika" in str(user.get("ekspozycja"))
         or "bez" in str(user.get("ekspozycja"))
@@ -303,7 +294,6 @@ def score_trail(user_profile, trail):
                 "DYSKWALIFIKACJA: opis zawiera łańcuchy, żleb, ekspozycję albo ubezpieczenia"
             )
 
-    # -------- DZIECI / RODZINA --------
     if user.get("dzieci") is True:
         if trail.get("suitable_for_children") is True:
             score += 20
@@ -312,7 +302,6 @@ def score_trail(user_profile, trail):
             score -= 60
             warnings.append("trasa nie wygląda na odpowiednią dla dzieci")
 
-    # -------- PREFERENCJE WIDOKOWE --------
     preferences = str(user.get("preferencje") or "").lower()
     attractions = trail.get("main_attractions") or []
     attractions_text = " ".join(attractions).lower() if isinstance(attractions, list) else str(attractions).lower()
@@ -356,7 +345,6 @@ def score_trail(user_profile, trail):
         "widok na",
         "widoki na"
     ]
-    # -------- PREFERENCJA: SZCZYT --------
     if "szczyt" in preferences:
         peak_keywords = [
             "szczyt",

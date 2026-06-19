@@ -209,7 +209,6 @@ def clean_llm_data(data):
         "short_summary"
     ]
 
-    # Listy: null -> [], [null] -> [], "tekst" -> ["tekst"]
     for field in list_fields:
         value = data.get(field)
 
@@ -223,7 +222,6 @@ def clean_llm_data(data):
         else:
             data[field] = [str(value)]
 
-    # Liczby: string/int/float -> int, błędne -> None
     for field in int_fields:
         value = data.get(field)
 
@@ -247,7 +245,6 @@ def clean_llm_data(data):
         except (ValueError, TypeError):
             data[field] = None
 
-    # Boole: "tak"/"nie" -> True/False
     for field in bool_fields:
         value = data.get(field)
 
@@ -266,7 +263,6 @@ def clean_llm_data(data):
         else:
             data[field] = None
 
-    # Pola tekstowe: dict/list -> sensowny tekst
     for field in string_fields:
         value = data.get(field)
 
@@ -278,7 +274,6 @@ def clean_llm_data(data):
             data[field] = cleaned if cleaned else None
 
         elif isinstance(value, dict):
-            # Jeśli LLM zwróci {"name": "...", "description": "..."}
             if value.get("name"):
                 data[field] = str(value["name"])
             elif value.get("title"):
